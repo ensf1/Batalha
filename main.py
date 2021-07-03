@@ -55,7 +55,7 @@ def conhecer_os_personagens():
     for personagem in personagens:
         print(personagem)
     print('Qual você deseja conhecer agora?')
-    while boneco := input().capitalize() not in personagens.keys():
+    while (boneco := input().capitalize()) not in personagens.keys():
         print('Esse personagem não existe, digite novamente:\n')
         boneco = input().capitalize()
     for k, v in personagens[boneco].items():
@@ -78,7 +78,7 @@ def menu():
           '2.Conhecer os personagens\n' +
           '3.Sair\n')
     op = int(input())
-    while 3 > op >0:
+    while 3 < op < 0:
         print('Essa opção não existe, tente novamente:\n')
         op = int(input())
     if op == 1:
@@ -86,13 +86,13 @@ def menu():
         for personagem in personagens:
             print(personagem)
         print('\n')
-        while boneco1 := input().capitalize() not in personagens.keys():
+        while (boneco1 := input().capitalize()) not in personagens.keys():
             print('Esse personagem não existe, digite novamente:\n')
         print('Segundo jogador, escolha com qual personagem deseja jogar:\n')
         for personagem in personagens:
             print(personagem)
         print('\n')
-        while boneco2 := input().capitalize() not in personagens.keys():
+        while (boneco2 := input().capitalize()) not in personagens.keys():
             print('Esse personagem não existe, digite novamente:\n')
     elif op == 2:
         conhecer_os_personagens()
