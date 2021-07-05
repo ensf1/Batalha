@@ -20,6 +20,7 @@ def dano_magico(atacante, atacado):
     print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(dano, atacado['nome'],dano_real))
     return dano_real
 
+
 def buff_fisico(atacante):
     nova_forca = atacante['força'] + (0.01 * atacante['vida'])
     aumento = nova_forca - atacante['força']
@@ -36,7 +37,6 @@ def buff_defesa(atacante):
     nova_defesa = atacante['defesa'] * 2 
     print('Defesa aumentada em',atacante['defesa'])
     return nova_defesa
-
 
 personagens = { # personagens
     'Canon': {  # Guerreiro tanker
