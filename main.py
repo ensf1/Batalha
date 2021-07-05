@@ -20,14 +20,32 @@ def dano_magico(atacante, atacado):
     print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(dano, atacado['nome'],dano_real))
     return dano_real
 
+
+def buff_fisico(atacante):
+    nova_forca = atacante['força'] + (0.01 * atacante['vida'])
+    aumento = nova_forca - atacante['força']
+    print('Força aumentada em',aumento)
+    return nova_forca
+
+def buff_magico(atacante):
+    novo_poder_magico = atacante['poder_magico'] + (0.01 * atacante['vida'])
+    aumento = novo_poder_magico - atacante['poder_magico']
+    print('Poder mágico aumentado em',aumento)
+    return novo_poder_magico 
+
+def buff_defesa(atacante):
+    nova_defesa = atacante['defesa'] * 2 
+    print('Defesa aumentada em',atacante['defesa'])
+    return nova_defesa
+
 personagens = { # personagens
-    'Elias': {  # Guerreiro tanker
-        'nome': 'Elias, o Bruto',
+    'Canon': {  # Guerreiro tanker
+        'nome': 'Canon, o Barbudo',
         'vida': 1500,
         'defesa': 15,
-        'força': 10,
+        'força': 9,
         'destreza': 5,
-        'poder_magico': 0,
+        'poder_magico': 1,
         'habilidades':[
             {
                 'nome':'Soco de uma polegada',# Dano
@@ -35,11 +53,13 @@ personagens = { # personagens
 
             },
             {
-                'nome': 'Fúria infernal',  # Diminui o acerto do inimigo por 2 rounds
+                'nome': 'Fúria infernal',  # Buff de dano fisico
+                'acao': buff_fisico
 
             },
             {
-                'nome': 'Aura reforçada',  # Dobra a defesa no próximo round
+                'nome': 'Aura reforçada',  # Buff de defesa
+                'acao': buff_defesa
 
             },
             {
@@ -48,13 +68,13 @@ personagens = { # personagens
             },
         ]
     },
-    'Pedro': {  # Mago
-        'nome': 'Pedro, o Let it Go',
+    'Elisa': {  # Mago
+        'nome': 'Elisa, não é a Elsa',
         'vida': 750,
-        'poder_magico': 20,
-        'defesa': 10,
-        'força': 0,
-        'destreza': 0,
+        'poder_magico': 18,
+        'defesa': 9,
+        'força': 1,
+        'destreza': 2,
         'habilidades':[
             {
                 'nome': 'Tempestade de neve',  # Dano
@@ -62,25 +82,27 @@ personagens = { # personagens
 
             },
             {
-                'nome': 'Brisa congelante',  # Declama uma bela melodia, congelando o inimigo por 1 turno
+                'nome': 'Chuva de granizos',  # Buff de dano mágico
+                'acao': buff_magico
             },
             {
-                'nome': 'Envólucro de gelo',  # Reduz o dano recebido no próximo ataque inimigo
+                'nome': 'Envólucro de gelo',  # Buff de defesa
+                'acao': buff_defesa
 
             },
             {
-                'nome': 'Chuva de granizos',  # Toma dano adicional por 2 turnos(dano da habilidade do round+dano da chuva de granizos)
+                'nome': 'Brisa congelante',  # Declama uma bela melodia, congelando o inimigo por 1 turno
 
             },
         ]
     },
-    'Joberval': {  # Samurai
-        'nome': 'Joberval, o Miyamoto Musashi manco',
+    'Jack': {  # Samurai
+        'nome': 'Samurai Jack',
         'vida': 1000,
         'força': 15,
-        'destreza': 10,
+        'destreza': 9,
         'defesa': 5,
-        'poder_magico': 0,
+        'poder_magico': 1,
         'habilidades': [
             {
                 'nome': 'Katana incisiva',  # Dano
@@ -88,15 +110,17 @@ personagens = { # personagens
 
             },
             {
-                'nome': 'Lâmina corrompida',  # Diminui a defesa do inimigo no próximo round
+                'nome': 'Lâmina corrompida',  # Buff de dano fisico
+                'acao': buff_fisico
 
             },
             {
-                'nome': 'Espírito da espada',  # Bloqueia o dano da próxima habilidade inimiga (porcentagem de dano)
+                'nome': 'Espírito da espada',  # Buff de defesa
+                'acao': buff_defesa
 
             },
             {
-                'nome': 'Último suspiro',  # Se a vida do oponente for menor que X, o hit é fatal
+                'nome': 'Último suspiro',  # Se a vida do oponente for menor que 10% , o hit é fatal
 
             },
         ]
