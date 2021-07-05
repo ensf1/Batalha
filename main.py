@@ -43,9 +43,9 @@ personagens = { # personagens
         'nome': 'Canon, o Barbudo',
         'vida': 1500,
         'defesa': 15,
-        'força': 9,
+        'força': 10,
         'destreza': 5,
-        'poder_magico': 1,
+        'poder_magico': 0,
         'habilidades':[
             {
                 'nome':'Soco de uma polegada',# Dano
@@ -71,10 +71,10 @@ personagens = { # personagens
     'Elisa': {  # Mago
         'nome': 'Elisa, não é a Elsa',
         'vida': 750,
-        'poder_magico': 18,
-        'defesa': 9,
-        'força': 1,
-        'destreza': 2,
+        'poder_magico': 20,
+        'defesa': 10,
+        'força': 0,
+        'destreza': 0,
         'habilidades':[
             {
                 'nome': 'Tempestade de neve',  # Dano
@@ -100,9 +100,9 @@ personagens = { # personagens
         'nome': 'Samurai Jack',
         'vida': 1000,
         'força': 15,
-        'destreza': 9,
+        'destreza': 10,
         'defesa': 5,
-        'poder_magico': 1,
+        'poder_magico': 0,
         'habilidades': [
             {
                 'nome': 'Katana incisiva',  # Dano
