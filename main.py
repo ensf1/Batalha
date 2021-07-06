@@ -3,6 +3,7 @@ from random import randint
 from time import sleep
 
 from icecream import ic
+
 # ic.disable()
 
 def ativar_buff(propriedade_afetada, afetado,habilidade):
@@ -14,14 +15,24 @@ def ativar_buff(propriedade_afetada, afetado,habilidade):
         ic(afetado['nome'],afetado['habilidades'][habilidade]['nome'], afetado['habilidades'][habilidade]['acao'], afetado['habilidades'][habilidade]['rounds'])
         return buff_ativo
     return propriedade_afetada
+  
+  
+# Exibe o nome dos personagens
+def personagem():
+    for personagem in personagens:
+        print(personagem)
 
+
+# Habilidade 1 Canon e Jack
+# Aplica o dano que será causado ao personagem atacado
+# Possui taxa de acerto, calculada com base na destreza do atacante 
 def dano_fisico(atacante, atacado):
     ic(atacante['nome'],atacado['nome'])
     dano = atacante['força'] * randint(4, 10)
-    dano = ativar_buff(dano, atacante, 1)
+    dano = ativar_buff(dano, atacante, 1) # Habilidade 2: Aumenta o ataque - duração de 2 rounds
     acerto = True if atacante['destreza'] * randint(1, 10) > 10 else False
     defesa_do_atacado = atacado['defesa'] * randint(1, 3)
-    defesa_do_atacado = ativar_buff(defesa_do_atacado, atacado,2)
+    defesa_do_atacado = ativar_buff(defesa_do_atacado, atacado,2) # Habilidade 3: Aumenta a defesa - duração de 2 rounds
     dano_real = int(dano) - int(defesa_do_atacado)
     if acerto and dano > defesa_do_atacado:
         print('Seu ataque deu {} de dano e {} perdeu {} de vida!'.format(int(dano), atacado['nome'], dano_real))
@@ -31,7 +42,8 @@ def dano_fisico(atacante, atacado):
         print('Que pena, você errou seu ataque!')
     atacado['vida'] -= dano_real if (dano_real > defesa_do_atacado and acerto) else 0
 
-
+# Habilidade 1 Elisa
+# 100% de acerto 
 def dano_magico(atacante, atacado):
     dano = atacante['poder_magico'] * randint(4, 10)
     dano = ativar_buff(dano, atacante, 1)
@@ -46,6 +58,7 @@ def dano_verdadeiro(atacante, atacado):
     dano_real= int(atacado['vida']*atacante['habilidades'][3]['dano_verdadeiro'])
     print('O ataque {} de {} tirou {}% da vida de {}'.format(atacante['habilidades'][3]['nome'], atacante['nome'], int(atacante['habilidades'][3]['dano_verdadeiro']*100), atacado['nome']))
     atacado['vida'] -= dano_real if dano_real <= atacado['vida'] else atacado['vida']
+
 
 
 personagens = { # personagens
@@ -89,7 +102,7 @@ personagens = { # personagens
         ]
     },
     'Elisa': {  # Mago
-        'nome': 'Elisa, não é a Elsa',
+        'nome': 'Elisa, a Rainha Gélida',
         'vida': 750,
         'poder_magico': 20,
         'defesa': 10,
@@ -118,11 +131,10 @@ personagens = { # personagens
 
             },
             {
-                'nome': 'Brisa congelante',  # Declama uma bela melodia, congelando o inimigo por 1 turno,
+                'nome': 'Brisa congelante',  # Dano baseado na vida no inimigo
                 'acao':dano_verdadeiro,
                 'dano_verdadeiro': 0.1,
                 'exibir': True
-
             },
         ]
     },
@@ -159,7 +171,7 @@ personagens = { # personagens
             {
                 'nome': 'Último suspiro',
                 'acao':dano_verdadeiro,
-                'dano_verdadeiro': 0.2, # Se a vida do oponente for menor que 10% , o hit é fatal
+                'dano_verdadeiro': 0.2, # Dano baseado na vida no inimigo, se a vida do oponente for menor que 20% , o hit é fatal
                 'exibir': True
 
             },
@@ -193,16 +205,16 @@ def quem_vai_jogar(proximo_a_jogar):
         primeiro_a_jogar = 1
     return primeiro_a_jogar
 
-
+# Auto-explicativo 
 def receber_entrada(entradas_permitidas, mensagem_de_erro):
     while (entrada_recebida := input().capitalize()) not in entradas_permitidas:
         print('{}, digite novamente:\n'.format(mensagem_de_erro))
     return entrada_recebida
 
+# Exibe um menu, onde é possível visualizar os atributos e habilidades dos personagens
 def conhecer_os_personagens():
     print('Nossos personagens são esses:\n')
-    for personagem in personagens:
-        print(personagem)
+    personagem()
     print('Qual você deseja conhecer agora?')
     while (boneco := input().capitalize()) not in personagens.keys():
         print('Esse personagem não existe, digite novamente:\n')
@@ -224,7 +236,7 @@ def consumir_habilidade(jogador,habilidade):
         jogador['habilidades'][habilidade]['rounds']=2
     return jogador
 
-
+# Menu inicial
 def menu():
     jogadores = []
     proximo_a_jogar = randint(0, 1) #decide quem joga primeiro
@@ -237,21 +249,20 @@ def menu():
     op = receber_entrada(entradas_permitidas=['1','2','3','4'], mensagem_de_erro='Essa opção não existe')
     if op == '1':
         ic(jogadores)
+        # Seleção de personagem
         print('Jogador X, escolha com qual personagem deseja jogar:\n')
-        for personagem in personagens:
-            print(personagem)
+        personagem()
         print('\n')
         boneco1 = receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')
         ic(personagens[boneco1].copy())
         print('Jogador Y, escolha com qual personagem deseja jogar:\n')
-        for personagem in personagens:
-            print(personagem)
+        personagem()
         print('\n')
         boneco2 = receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')
         jogadores = copia_dos_personagens(boneco1,boneco2)
         ic(personagens[boneco2].copy())
         primeiro_a_jogar = quem_vai_jogar(proximo_a_jogar)
-        while jogadores[primeiro_a_jogar]['vida'] > 0 and jogadores[proximo_a_jogar]['vida'] > 0:
+        while jogadores[primeiro_a_jogar]['vida'] > 0 and jogadores[proximo_a_jogar]['vida'] > 0: # Início da batalha
             ic(primeiro_a_jogar,proximo_a_jogar)
             print('{} qual ataque deseja executar:'.format(jogadores[primeiro_a_jogar]['nome']))
             habilidades_permitidas = []
@@ -279,6 +290,7 @@ def menu():
                     vencedores.write(vencedor)
             proximo_a_jogar = primeiro_a_jogar
             primeiro_a_jogar = quem_vai_jogar(proximo_a_jogar)
+
     elif op == '2':
         conhecer_os_personagens()
     elif op == '3':
@@ -292,8 +304,6 @@ def menu():
         sleep(2)
     if op != '4':
         menu()
-
-
 
 
 menu()
