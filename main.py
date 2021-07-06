@@ -6,10 +6,14 @@ from icecream import ic
 #decide quem joga primeiro
 proximo_a_jogar = randint(0, 1)
 
+# Exibe o nome dos personagens
 def personagem():
     for personagem in personagens:
         print(personagem)
 
+# Habilidade 1 Canon e Jack
+# Retorna o dano real que será causado ao personagem atacado (dano do atacante - defesa do atacado)
+# Possui taxa de acerto, calculada com base na destreza do atacante 
 def dano_fisico(atacante, atacado):
     dano = atacante['força'] * randint(4, 10)
     acerto = True if atacante['destreza'] * randint(1, 10) > 10 else False
@@ -23,7 +27,8 @@ def dano_fisico(atacante, atacado):
         print('Que pena, você errou seu ataque!')
     return dano_real if dano_real > defesa_do_atacado else 0
 
-
+# Habilidade 1 Elisa
+# 100% de acerto 
 def dano_magico(atacante, atacado):
     dano = atacante['poder_magico'] * randint(4, 10)
     defesa_do_atacado = atacado['defesa'] * randint(1, 3)
@@ -31,19 +36,26 @@ def dano_magico(atacante, atacado):
     print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(dano, atacado['nome'],dano_real) if dano_real > 0 else 'Que pena, {} se defendeu!'.format(atacado['nome']))
     return dano_real if dano_real > defesa_do_atacado else 0
 
-
+# Habilidade 2 Canon e Jack
+# Aumenta a força com base em 10% da vida atual
+# Duração de 2 rounds
 def buff_fisico(atacante):
     nova_forca = int(atacante['força'] + (0.01 * atacante['vida']))
     aumento = nova_forca - atacante['força']
     print('Força aumentada em',aumento)
     return nova_forca
 
+# Habilidade 2 Elisa
+# Aumento no poder mágico com base em 10% da vida atual
+# Duração de 2 rounds
 def buff_magico(atacante):
     novo_poder_magico = atacante['poder_magico'] + (0.01 * atacante['vida'])
     aumento = novo_poder_magico - atacante['poder_magico']
     print('Poder mágico aumentado em',aumento)
     return novo_poder_magico 
 
+# Habilidade 3 
+# Dobra a defesa por 2 rounds
 def buff_defesa(atacante):
     nova_defesa = atacante['defesa'] * 2 
     print('Defesa aumentada em',atacante['defesa'])
@@ -160,12 +172,13 @@ def quem_vai_jogar(jogadores):
         proximo_a_jogar = 1
     return jogador_atual
 
-
+# Auto-explicativo 
 def receber_entrada(entradas_permitidas, mensagem_de_erro):
     while (entrada_recebida := input().capitalize()) not in entradas_permitidas:
         print('{}, digite novamente:\n'.format(mensagem_de_erro))
     return entrada_recebida
 
+# Exibe um menu, onde é possível visualizar os atributos e habilidades dos personagens
 def conhecer_os_personagens():
     print('Nossos personagens são esses:\n')
     personagem()
@@ -182,11 +195,10 @@ def conhecer_os_personagens():
     if op == 2:
         conhecer_os_personagens()
 
-
-
+# Menu inicial 
 def menu():
     jogadores = []
-    print('Bem-vindos(as) nobres lutadores ao Perfect Legends!\n' +
+    print('Bem-vindos(as) nobres lutadores(as) ao Perfect Legends!\n' +
           'Neste momento, vocês desejam:\n' +
           '1.Jogar\n' +
           '2.Conhecer os personagens\n' +
@@ -235,8 +247,6 @@ def menu():
                 vencedor  = '- ' + input() + '\n'
                 with open('vencedores', 'a') as vencedores:
                     vencedores.write(vencedor)
-
-
     elif op == '2':
         conhecer_os_personagens()
     elif op == '3':
@@ -250,8 +260,5 @@ def menu():
         sleep(2)
     if op != '4':
         menu()
-
-
-
 menu()
 print('Obrigada por se aventurar em Perfect Legends, aguardamos seu retorno!')
