@@ -1,10 +1,11 @@
+import os
 from pathlib import Path
 from random import randint
 from time import sleep
 
 from icecream import ic
 
-# ic.disable()
+ic.disable()
 
 def ativar_buff(propriedade_afetada, afetado,habilidade):
     if afetado['habilidades'][habilidade]['acao'] and afetado['habilidades'][habilidade]['rounds'] > 0:
@@ -12,13 +13,13 @@ def ativar_buff(propriedade_afetada, afetado,habilidade):
         afetado['habilidades'][habilidade]['rounds'] -= 1
         if afetado['habilidades'][habilidade]['rounds'] == 0:
             afetado['habilidades'][habilidade]['acao'] = False
-        ic(afetado['nome'],afetado['habilidades'][habilidade]['nome'], afetado['habilidades'][habilidade]['acao'], afetado['habilidades'][habilidade]['rounds'])
+        print('{} está sob o efeito de {} por mais {} rodadas'.format(afetado['nome'],afetado['habilidades'][habilidade]['nome'], afetado['habilidades'][habilidade]['rounds']) if afetado['habilidades'][habilidade]['rounds'] > 0 else 'O efeito {} de {} acabou!'.format(afetado['habilidades'][habilidade]['nome'], afetado['nome']))
         return buff_ativo
     return propriedade_afetada
   
   
 # Exibe o nome dos personagens
-def personagem():
+def exibir_personagens():
     for personagem in personagens:
         print(personagem)
 
@@ -27,7 +28,6 @@ def personagem():
 # Aplica o dano que será causado ao personagem atacado
 # Possui taxa de acerto, calculada com base na destreza do atacante 
 def dano_fisico(atacante, atacado):
-    ic(atacante['nome'],atacado['nome'])
     dano = atacante['força'] * randint(4, 10)
     dano = ativar_buff(dano, atacante, 1) # Habilidade 2: Aumenta o ataque - duração de 2 rounds
     acerto = True if atacante['destreza'] * randint(1, 10) > 10 else False
@@ -72,12 +72,14 @@ personagens = { # personagens
         'habilidades':[
             {
                 'nome':'Soco de uma polegada',# Dano
+                'descricao': 'Reune toda sua força em um soco para aplicar dano ao inimigo',
                 'acao': dano_fisico,
                 'exibir': True
 
             },
             {
                 'nome': 'Fúria infernal',
+                'descricao': 'Concentra toda sua força para tornar seus socos mais fortes nos próximos ataques',
                 'acao': False,
                 'aumento': 0.05,
                 'rounds': 0,
@@ -86,6 +88,7 @@ personagens = { # personagens
             },
             {
                 'nome': 'Aura reforçada',  # Buff de defesa
+                'descricao': 'Reforça a defesa para se proteger do inimigo',
                 'acao': False,
                 'aumento': 0.15,
                 'rounds': 0,
@@ -93,7 +96,8 @@ personagens = { # personagens
 
             },
             {
-                'nome': 'Carapaça de espinhos',  # Reflete o dano da próxima habilidade recebida
+                'nome': 'Espinhos penetrante',  # Dano baseado na vida no inimigo
+                'descricao': 'Crava espinhos aplicando 5% da vida do inimigo como dano',
                 'acao': dano_verdadeiro,
                 'dano_verdadeiro': 0.05,
                 'exibir': True
@@ -110,13 +114,15 @@ personagens = { # personagens
         'destreza': 0,
         'habilidades':[
             {
-                'nome': 'Tempestade de neve',  # Dano
+                'nome': 'Chuva de granizos',  # Dano
+                'descricao': 'Derrama seu poder mágico atráves de uma chuva de granizos para aplicar dano ao inimigo',
                 'acao': dano_magico,
                 'exibir': True
 
             },
             {
-                'nome': 'Chuva de granizos',
+                'nome': 'Tempestade de neve',
+                'descricao': 'Com seu poder mágico, invoca uma tempestade de neve para aumentar seu dano nos próximos ataques',
                 'aumento': 0.1,
                 'acao': False,
                 'rounds': 0,
@@ -124,6 +130,7 @@ personagens = { # personagens
             },
             {
                 'nome': 'Envólucro de gelo',  # Buff de defesa
+                'descricao': 'Conjura através do seu poder mágico um envólucro de gelo para se proteger dos próximos ataques do inimigo',
                 'aumento':  0.1,
                 'acao': False,
                 'rounds': 0,
@@ -132,6 +139,7 @@ personagens = { # personagens
             },
             {
                 'nome': 'Brisa congelante',  # Dano baseado na vida no inimigo
+                'descricao': 'Sopra uma brisa que aplica 10% da vida do inimigo como dano',
                 'acao':dano_verdadeiro,
                 'dano_verdadeiro': 0.1,
                 'exibir': True
@@ -148,12 +156,14 @@ personagens = { # personagens
         'habilidades': [
             {
                 'nome': 'Katana incisiva',  # Dano
+                'descricao': 'Dilacera o inimigo com a força de sua katana aplicando dano ao inimigo',
                 'acao': dano_fisico,
                 'exibir': True
 
             },
             {
                 'nome': 'Lâmina corrompida',  # Buff de dano fisico
+                'descricao': 'Envena sua lâmina para aplicar mais dano ao inimigo nos próximos rounds',
                 'acao': False,
                 'aumento': 0.2,
                 'rounds': 0,
@@ -162,6 +172,7 @@ personagens = { # personagens
             },
             {
                 'nome': 'Espírito da espada',  # Buff de defesa
+                'descricao': 'Invoca seu espírito de defesa na sua própria espada para se proteger dos próximos ataques inimigos',
                 'acao': False,
                 'aumento': 0.2,
                 'rounds': 0,
@@ -170,6 +181,7 @@ personagens = { # personagens
             },
             {
                 'nome': 'Último suspiro',
+                'descricao': 'Tortura o inimigo aplicando 20% da vida do inimigo como dano',
                 'acao':dano_verdadeiro,
                 'dano_verdadeiro': 0.2, # Dano baseado na vida no inimigo, se a vida do oponente for menor que 20% , o hit é fatal
                 'exibir': True
@@ -179,7 +191,7 @@ personagens = { # personagens
     }
 }
 
-
+# Cria uma cópia das habilidades de um personagem do dicionário para adicionar no array jogadores
 def copia_do_personagem(boneco):
     jogador = personagens[boneco].copy()
     jogador['habilidades']  = []
@@ -187,7 +199,7 @@ def copia_do_personagem(boneco):
         jogador['habilidades'].append(habilidade.copy())
     return jogador
 
-
+# Cria uma cópia das habilidades de um personagem do dicionário para adicionar no array jogadores
 def copia_dos_personagens(boneco1,boneco2):
     jogadores = []
     jogador = copia_do_personagem(boneco1)
@@ -197,7 +209,7 @@ def copia_dos_personagens(boneco1,boneco2):
     return jogadores
 
 
-
+# Cria uma cópia das habilidades de um personagem do dicionário para adicionar no array jogadores
 def quem_vai_jogar(proximo_a_jogar):
     if proximo_a_jogar == 1:
         primeiro_a_jogar = 0
@@ -208,27 +220,41 @@ def quem_vai_jogar(proximo_a_jogar):
 # Auto-explicativo 
 def receber_entrada(entradas_permitidas, mensagem_de_erro):
     while (entrada_recebida := input().capitalize()) not in entradas_permitidas:
+        ic(entrada_recebida)
         print('{}, digite novamente:\n'.format(mensagem_de_erro))
     return entrada_recebida
+
+
+def receber_senha(entradas_permitidas):
+    while (entrada_recebida := input()) not in entradas_permitidas:
+        ic(entrada_recebida)
+        print('Senha incorreta, digite novamente:\n')
+    return entrada_recebida
+
 
 # Exibe um menu, onde é possível visualizar os atributos e habilidades dos personagens
 def conhecer_os_personagens():
     print('Nossos personagens são esses:\n')
-    personagem()
+    exibir_personagens()
     print('Qual você deseja conhecer agora?')
     while (boneco := input().capitalize()) not in personagens.keys():
         print('Esse personagem não existe, digite novamente:\n')
         boneco = input().capitalize()
     for k, v in personagens[boneco].items():
-        print(k + ": " + str(v))
+        if k == 'habilidades':
+            print(k+': ')
+            for x, habilidade in enumerate(personagens[boneco][k], 1):
+                print('{}.{}:{}'.format(x, habilidade['nome'],habilidade['descricao']))
+        else:
+            print(k + ": " + str(v))
     print('Deseja:\n'+
         '1.Retornar ao menu.\n'+
         '2.Conhecer mais personagens.\n')
-    op = int(input())
-    if op == 2:
+    op = receber_entrada(entradas_permitidas=['1','2'], mensagem_de_erro='Entrada inválida')
+    if op == '2':
         conhecer_os_personagens()
 
-
+# Cria uma cópia das habilidades de um personagem do dicionário para adicionar no array jogadores
 def consumir_habilidade(jogador,habilidade):
     jogador['habilidades'][habilidade]['exibir'] = False
     if habilidade == 1 or habilidade == 2:
@@ -236,8 +262,94 @@ def consumir_habilidade(jogador,habilidade):
         jogador['habilidades'][habilidade]['rounds']=2
     return jogador
 
-# Menu inicial
-def menu():
+
+# Seleção de personagem
+def selecionar_personagem():
+    print('Escolha com qual personagem deseja jogar:\n')
+    exibir_personagens()
+    print('\n')
+    boneco = receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')
+    return boneco
+
+
+def receber_usuario(entradas_proibidas, mensagem_de_erro):
+    while (usuario := input().capitalize()) in entradas_proibidas:
+        print('{}, digite novamente:\n'.format(mensagem_de_erro))
+        exibir_personagens()
+    return usuario
+
+
+def criar_usuario(x=''):
+    print('Jogador{}, informe o usuário que deseja:\n'.format(' '+str(x) if x else ''))
+    usuario = receber_usuario(entradas_proibidas=personagens.keys(), mensagem_de_erro='Usuário Inválido, o nome de usuário deve ser diferente do nome dos persongens abaixo')
+    path_usuario = Path('usuario_' + usuario)
+    while os.path.exists(path_usuario):
+        print("Usuário ", usuario, " já existe")
+        usuario = receber_usuario(entradas_proibidas=personagens.keys(), mensagem_de_erro='Usuário Inválido, o nome de usuário deve ser diferente do nome dos persongens abaixo')
+        path_usuario = Path('usuario_' + usuario)
+    else:
+        os.makedirs(path_usuario)
+    print('Informe a senha que deseja usar para acessar:\n')
+    senha = input()
+    path_senha = path_usuario.joinpath('senha')
+    with open(path_senha, 'w') as arquivo_senha:
+        arquivo_senha.write(senha)
+    print("Usuário ", usuario, " criado com sucesso! ")
+
+
+def login(x):
+    print('Jogador {}, informe seu usuário:\n'.format(x))
+    usuario = input()
+    path_usuario = Path('usuario_' + usuario)
+    if os.path.exists(path_usuario):
+        path_senha = path_usuario.joinpath('senha')
+        with open(path_senha, 'r') as arquivo_usuario:
+            senha_correta = arquivo_usuario.readline()
+        print('Informe sua senha:\n')
+        ic(senha_correta)
+        senha = receber_senha(entradas_permitidas=senha_correta)
+        print('Bem-vindo(a) {}'.format(usuario))
+        path_personagem = path_usuario.joinpath('personagem')
+        with open(path_personagem, 'w') as arquivo_personagem:
+            arquivo_personagem.write(selecionar_personagem())
+        return usuario
+    else:
+        print('Usuário não encontrado!')
+        print('Deseja:\n' +
+              '1.Tentar novamente\n' +
+              '2.Criar Usuário\n')
+        op = receber_entrada(entradas_permitidas=['1', '2'], mensagem_de_erro='Essa opção não existe')
+        if op == '1':
+            return login(x)
+        if op == '2':
+            criar_usuario(x)
+            return login(x)
+
+def logins():
+    usuarios = []
+    usuarios.append(login(1))
+    usuarios.append(login(2))
+    menu(usuarios)
+
+
+
+# Autenticação
+def autenticacao():
+    print('Bem-vindos(as) nobres lutadores ao Perfect Legends!\n' +
+          'Neste momento, vocês desejam:\n' +
+          '1.Fazer Login\n' +
+          '2.Criar uma conta\n' +
+          '3.Sair\n')
+    op = receber_entrada(entradas_permitidas=['1', '2', '3'], mensagem_de_erro='Essa opção não existe')
+    if op == '1':
+        logins()
+    if op == '2':
+        criar_usuario()
+        autenticacao()
+
+
+# Menu principal
+def menu(usuarios):
     jogadores = []
     proximo_a_jogar = randint(0, 1) #decide quem joga primeiro
     print('Bem-vindos(as) nobres lutadores ao Perfect Legends!\n' +
@@ -248,22 +360,15 @@ def menu():
           '4.Sair\n')
     op = receber_entrada(entradas_permitidas=['1','2','3','4'], mensagem_de_erro='Essa opção não existe')
     if op == '1':
-        ic(jogadores)
-        # Seleção de personagem
-        print('Jogador X, escolha com qual personagem deseja jogar:\n')
-        personagem()
-        print('\n')
-        boneco1 = receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')
-        ic(personagens[boneco1].copy())
-        print('Jogador Y, escolha com qual personagem deseja jogar:\n')
-        personagem()
-        print('\n')
-        boneco2 = receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')
+        path_usuario = Path('usuario_' + usuarios[0])
+        with open(path_usuario.joinpath('personagem')) as arquivo_personagem:
+            boneco1 = arquivo_personagem.readline()
+        path_usuario1 = Path('usuario_' + usuarios[1])
+        with open(path_usuario1.joinpath('personagem')) as arquivo_personagem:
+            boneco2 = arquivo_personagem.readline()
         jogadores = copia_dos_personagens(boneco1,boneco2)
-        ic(personagens[boneco2].copy())
         primeiro_a_jogar = quem_vai_jogar(proximo_a_jogar)
         while jogadores[primeiro_a_jogar]['vida'] > 0 and jogadores[proximo_a_jogar]['vida'] > 0: # Início da batalha
-            ic(primeiro_a_jogar,proximo_a_jogar)
             print('{} qual ataque deseja executar:'.format(jogadores[primeiro_a_jogar]['nome']))
             habilidades_permitidas = []
             for x, habilidade in enumerate(jogadores[primeiro_a_jogar]['habilidades'], 1):
@@ -271,21 +376,25 @@ def menu():
                     print('{}.{}'.format(x, habilidade['nome']))
                     habilidades_permitidas.append(str(x))
             habilidade_escolhida = int(receber_entrada(entradas_permitidas=habilidades_permitidas, mensagem_de_erro='Essa habilidade não existe'))-1
-            if habilidade_escolhida == 0 or habilidade_escolhida == 3:
-                ic(primeiro_a_jogar, proximo_a_jogar)
+            if habilidade_escolhida == 0 or habilidade_escolhida == 3: # Habilidades 1 ou 4
                 jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['acao'](jogadores[primeiro_a_jogar], jogadores[proximo_a_jogar])
-                ic(primeiro_a_jogar,proximo_a_jogar)
                 sleep(1)
-            if habilidade_escolhida > 0 and habilidade_escolhida < 4:
-                jogadores[primeiro_a_jogar] = consumir_habilidade(jogadores[primeiro_a_jogar],habilidade_escolhida)
+            if habilidade_escolhida > 0 and habilidade_escolhida < 4:# Habilidades 2, 3 ou 4
+                jogadores[primeiro_a_jogar] = consumir_habilidade(jogadores[primeiro_a_jogar], habilidade_escolhida)
                 if habilidade_escolhida == 1 or habilidade_escolhida == 2:
-                    print('{} usou {}, {} aumentou em {}%'.format(jogadores[primeiro_a_jogar]['nome'],jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['nome'], 'o ataque' if habilidade_escolhida==1 else 'a defesa', jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['aumento']*100))
+                    print('{} usou {}, {} aumentou em {}%'.format(jogadores[primeiro_a_jogar]['nome'], jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['nome'], 'o ataque' if habilidade_escolhida==1 else 'a defesa', jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['aumento']*100))
                     sleep(1)
+            print('Vida atual de {}:{}, vida atual de {}:{}'.format(jogadores[primeiro_a_jogar]['nome'], jogadores[primeiro_a_jogar]['vida'], jogadores[proximo_a_jogar]['nome'], jogadores[proximo_a_jogar]['vida']))
             if jogadores[proximo_a_jogar]['vida'] <= 0:
-                print('{} ganhou!'.format(jogadores[primeiro_a_jogar]['nome']))
-                print('Informe seu nome para ser adicionado a lista de vencedores:\n')
-                vencedor = ('- ', input())
-                vencedor = str(vencedor)
+                ic(boneco1,boneco2,jogadores[primeiro_a_jogar]['nome'],jogadores[proximo_a_jogar]['nome'])
+                if boneco1 in jogadores[primeiro_a_jogar]['nome']:
+                    ic('entrou 1')
+                    print('{} ganhou!'.format(usuarios[0]))
+                    vencedor = ('- ' + usuarios[0]+'\n')
+                else:
+                    ic('entrou2')
+                    print('{} ganhou!'.format(usuarios[1]))
+                    vencedor = ('- ' + usuarios[1]+'\n')
                 with open('vencedores', 'a') as vencedores:
                     vencedores.write(vencedor)
             proximo_a_jogar = primeiro_a_jogar
@@ -303,8 +412,8 @@ def menu():
         print('')
         sleep(2)
     if op != '4':
-        menu()
+        menu(usuarios)
 
 
-menu()
+autenticacao()
 print('Obrigada por se aventurar em Perfect Legends, aguardamos seu retorno!')
