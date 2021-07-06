@@ -6,6 +6,9 @@ from icecream import ic
 #decide quem joga primeiro
 proximo_a_jogar = randint(0, 1)
 
+def personagem():
+    for personagem in personagens:
+        print(personagem)
 
 def dano_fisico(atacante, atacado):
     dano = atacante['força'] * randint(4, 10)
@@ -81,7 +84,7 @@ personagens = { # personagens
         ]
     },
     'Elisa': {  # Mago
-        'nome': 'Elisa, não é a Elsa',
+        'nome': 'Elisa, a Rainha Gélida',
         'vida': 750,
         'poder_magico': 20,
         'defesa': 10,
@@ -105,7 +108,7 @@ personagens = { # personagens
 
             },
             {
-                'nome': 'Brisa congelante',  # Declama uma bela melodia, congelando o inimigo por 1 turno,
+                'nome': 'Brisa congelante',  # Declama uma bela melodia, congelando o inimigo por 1 turno
                 'acao':'',
                 'rounds': 0
 
@@ -165,8 +168,7 @@ def receber_entrada(entradas_permitidas, mensagem_de_erro):
 
 def conhecer_os_personagens():
     print('Nossos personagens são esses:\n')
-    for personagem in personagens:
-        print(personagem)
+    personagem()
     print('Qual você deseja conhecer agora?')
     while (boneco := input().capitalize()) not in personagens.keys():
         print('Esse personagem não existe, digite novamente:\n')
@@ -192,19 +194,19 @@ def menu():
           '4.Sair\n')
     op = receber_entrada(entradas_permitidas=['1','2','3','4'], mensagem_de_erro='Essa opção não existe')
     if op == '1':
+        # Seleção de personagem
         print('Jogador X, escolha com qual personagem deseja jogar:\n')
-        for personagem in personagens:
-            print(personagem)
+        personagem()
         print('\n')
         boneco1 = receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')
         jogadores.append(personagens[boneco1].copy())
         print('Jogador Y, escolha com qual personagem deseja jogar:\n')
-        for personagem in personagens:
-            print(personagem)
+        personagem()
         print('\n')
         boneco2 = receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')
         jogadores.append(personagens[boneco2].copy())
-        jogador_atual = quem_vai_jogar(jogadores)
+        jogador_atual = quem_vai_jogar(jogadores) 
+        # Início da batalha
         while jogador_atual['vida'] > 0 and jogadores[proximo_a_jogar]['vida'] > 0:
             print('{} qual ataque deseja executar:'.format(jogador_atual['nome']))
             for x, habilidade in enumerate(jogador_atual['habilidades'], 1):
