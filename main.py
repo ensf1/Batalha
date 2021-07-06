@@ -3,17 +3,25 @@ from random import randint
 from time import sleep
 
 from icecream import ic
+ic.disable()
+
 #decide quem joga primeiro
 proximo_a_jogar = randint(0, 1)
 
 
 def dano_fisico(atacante, atacado):
     dano = atacante['força'] * randint(4, 10)
+    if atacante['habilidades'][1]['acao']:
+        dano *= 1.1
+        ic('Ataque buff', atacante['nome'],atacante['habilidades'][1]['acao'],atacante['habilidades'][1]['rounds'])
     acerto = True if atacante['destreza'] * randint(1, 10) > 10 else False
     defesa_do_atacado = atacado['defesa'] * randint(1, 3)
-    dano_real = dano - defesa_do_atacado
+    if atacado['habilidades'][2]['acao']:
+        defesa_do_atacado *= 1.1
+        ic('Def buff', atacado['nome'],atacado['habilidades'][2]['acao'],atacado['habilidades'][2]['rounds'])
+    dano_real = int(dano) - int(defesa_do_atacado)
     if acerto and dano > defesa_do_atacado:
-        print('Seu ataque deu {} de dano e {} perdeu {} de vida!'.format(dano, atacado['nome'], dano_real))
+        print('Seu ataque deu {} de dano e {} perdeu {} de vida!'.format(int(dano), atacado['nome'], dano_real))
     elif acerto:
         print('Que pena, {} se defendeu!'.format(atacado['nome']))
     else:
@@ -23,28 +31,18 @@ def dano_fisico(atacante, atacado):
 
 def dano_magico(atacante, atacado):
     dano = atacante['poder_magico'] * randint(4, 10)
+    if atacante['habilidades'][1]['acao']:
+        dano *= 1.1
+        ic('Ataque buff', atacante['nome'] ,atacante['habilidades'][1]['acao'], atacante['habilidades'][1]['rounds'])
     defesa_do_atacado = atacado['defesa'] * randint(1, 3)
-    dano_real = dano - defesa_do_atacado
-    print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(dano, atacado['nome'],dano_real) if dano_real > 0 else 'Que pena, {} se defendeu!'.format(atacado['nome']))
+    if atacado['habilidades'][2]['acao']:
+        defesa_do_atacado *= 1.1
+        ic('Def buff', atacado['nome'], atacado['habilidades'][2]['acao'], atacado['habilidades'][2]['rounds'])
+    dano_real = int(dano) - int(defesa_do_atacado)
+    print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(int(dano), atacado['nome'],dano_real) if dano_real > 0 else 'Que pena, {} se defendeu!'.format(atacado['nome']))
     return dano_real if dano_real > defesa_do_atacado else 0
 
 
-def buff_fisico(atacante):
-    nova_forca = int(atacante['força'] + (0.01 * atacante['vida']))
-    aumento = nova_forca - atacante['força']
-    print('Força aumentada em',aumento)
-    return nova_forca
-
-def buff_magico(atacante):
-    novo_poder_magico = atacante['poder_magico'] + (0.01 * atacante['vida'])
-    aumento = novo_poder_magico - atacante['poder_magico']
-    print('Poder mágico aumentado em',aumento)
-    return novo_poder_magico 
-
-def buff_defesa(atacante):
-    nova_defesa = atacante['defesa'] * 2 
-    print('Defesa aumentada em',atacante['defesa'])
-    return nova_defesa
 
 personagens = { # personagens
     'Canon': {  # Guerreiro tanker
@@ -57,25 +55,29 @@ personagens = { # personagens
         'habilidades':[
             {
                 'nome':'Soco de uma polegada',# Dano
-                'acao': dano_fisico
+                'acao': dano_fisico,
+                'exibir': True
 
             },
             {
-                'nome': 'Fúria infernal',  # Buff de dano fisico
-                'acao': buff_fisico,
-                'rounds': 0
+                'nome': 'Fúria infernal',
+                'acao': False,
+                'rounds': 0,
+                'exibir': True
 
             },
             {
                 'nome': 'Aura reforçada',  # Buff de defesa
-                'acao': buff_defesa,
-                'rounds': 0
+                'acao': False,
+                'rounds': 0,
+                'exibir': True
 
             },
             {
                 'nome': 'Carapaça de espinhos',  # Reflete o dano da próxima habilidade recebida
                 'acao': '',
-                'rounds': 0
+                'rounds': 0,
+                'exibir': True
 
             },
         ]
@@ -90,24 +92,28 @@ personagens = { # personagens
         'habilidades':[
             {
                 'nome': 'Tempestade de neve',  # Dano
-                'acao': dano_magico
+                'acao': dano_magico,
+                'exibir': True
 
             },
             {
-                'nome': 'Chuva de granizos',  # Buff de dano mágico
-                'acao': buff_magico,
-                'rounds': 0
+                'nome': 'Chuva de granizos',
+                'acao': False,
+                'rounds': 0,
+                'exibir': True
             },
             {
                 'nome': 'Envólucro de gelo',  # Buff de defesa
-                'acao': buff_defesa,
-                'rounds': 0
+                'acao': False,
+                'rounds': 0,
+                'exibir': True
 
             },
             {
                 'nome': 'Brisa congelante',  # Declama uma bela melodia, congelando o inimigo por 1 turno,
                 'acao':'',
-                'rounds': 0
+                'rounds': 0,
+                'exibir': True
 
             },
         ]
@@ -122,25 +128,29 @@ personagens = { # personagens
         'habilidades': [
             {
                 'nome': 'Katana incisiva',  # Dano
-                'acao': dano_fisico
+                'acao': dano_fisico,
+                'exibir': True
 
             },
             {
                 'nome': 'Lâmina corrompida',  # Buff de dano fisico
-                'acao': buff_fisico,
-                'rounds': 0
+                'acao': False,
+                'rounds': 0,
+                'exibir': True
 
             },
             {
                 'nome': 'Espírito da espada',  # Buff de defesa
-                'acao': buff_defesa,
-                'rounds': 0
+                'acao': False,
+                'rounds': 0,
+                'exibir': True
 
             },
             {
                 'nome': 'Último suspiro',  # Se a vida do oponente for menor que 10% , o hit é fatal
                 'acao':'',
-                'rounds': 0
+                'rounds': 0,
+                'exibir': True
 
             },
         ]
@@ -207,19 +217,66 @@ def menu():
         jogador_atual = quem_vai_jogar(jogadores)
         while jogador_atual['vida'] > 0 and jogadores[proximo_a_jogar]['vida'] > 0:
             print('{} qual ataque deseja executar:'.format(jogador_atual['nome']))
+            habilidades_permitidas = []
             for x, habilidade in enumerate(jogador_atual['habilidades'], 1):
-                print('{}.{}'.format(x, habilidade['nome']))
-            habilidade_escolhida = int(receber_entrada(entradas_permitidas=['1', '2',  '3', '4'], mensagem_de_erro='Essa habilidade não existe'))-1
-            jogadores[proximo_a_jogar]['vida'] -= jogador_atual['habilidades'][habilidade_escolhida]['acao'](jogador_atual, jogadores[proximo_a_jogar])
-            sleep(1)
+                if habilidade['exibir']:
+                    print('{}.{}'.format(x, habilidade['nome']))
+                    habilidades_permitidas.append(str(x))
+            habilidade_escolhida = int(receber_entrada(entradas_permitidas=habilidades_permitidas, mensagem_de_erro='Essa habilidade não existe'))-1
+            if habilidade_escolhida == 0:
+                jogadores[proximo_a_jogar]['vida'] -= jogador_atual['habilidades'][habilidade_escolhida]['acao'](jogador_atual, jogadores[proximo_a_jogar])
+                sleep(1)
+                if jogador_atual['habilidades'][1]['acao'] and jogador_atual['habilidades'][1]['rounds'] > 0:
+                    jogador_atual['habilidades'][1]['rounds'] -= 1
+                    ic('atacante', jogador_atual['nome'])
+                    if jogador_atual['habilidades'][1]['rounds'] == 0:
+                        jogador_atual['habilidades'][1]['acao'] = False
+                if jogadores[proximo_a_jogar]['habilidades'][2]['acao'] and jogadores[proximo_a_jogar]['habilidades'][2]['rounds'] > 0:
+                    jogadores[proximo_a_jogar]['habilidades'][2]['rounds'] -= 1
+                    ic('atacado', jogador_atual['nome'])
+                    if jogadores[proximo_a_jogar]['habilidades'][2]['rounds'] == 0:
+                        jogadores[proximo_a_jogar]['habilidades'][2]['acao'] = False
+            elif habilidade_escolhida == 1 or habilidade_escolhida == 2:
+                print('{} usou {}, {} aumentou em 10%'.format(jogador_atual['nome'],jogador_atual['habilidades'][habilidade_escolhida]['nome'], 'o ataque' if habilidade_escolhida==1 else 'a defesa'))
+                sleep(1)
+                ic(jogador_atual['habilidades'][habilidade_escolhida]['exibir'])
+                jogador_atual['habilidades'][habilidade_escolhida]['exibir'] = False
+                ic(jogador_atual['habilidades'][habilidade_escolhida]['exibir'])
+                jogador_atual['habilidades'][habilidade_escolhida]['acao']= True
+                jogador_atual['habilidades'][habilidade_escolhida]['rounds'] = 2
+                ic(jogador_atual['nome'])
             ic(jogadores[proximo_a_jogar]['vida'], jogador_atual['vida'])
             if jogadores[proximo_a_jogar]['vida'] > 0:
                 print('{} qual ataque deseja executar:'.format(jogadores[proximo_a_jogar]['nome']))
+                habilidades_permitidas = []
                 for x, habilidade in enumerate(jogadores[proximo_a_jogar]['habilidades'], 1):
-                    print('{}.{}'.format(x, habilidade['nome']))
-                habilidade_escolhida = int(receber_entrada(entradas_permitidas=['1', '2', '3', '4'], mensagem_de_erro='Essa habilidade não existe')) - 1
-                jogador_atual['vida'] -= jogadores[proximo_a_jogar]['habilidades'][habilidade_escolhida]['acao'](jogadores[proximo_a_jogar], jogador_atual)
-                sleep(1)
+                    if habilidade['exibir']:
+                        print('{}.{}'.format(x, habilidade['nome']))
+                        habilidades_permitidas.append(str(x))
+                habilidade_escolhida = int(receber_entrada(entradas_permitidas=habilidades_permitidas, mensagem_de_erro='Essa habilidade não existe')) - 1
+                if habilidade_escolhida == 0:
+                    jogador_atual['vida'] -= jogadores[proximo_a_jogar]['habilidades'][habilidade_escolhida]['acao'](jogadores[proximo_a_jogar], jogador_atual)
+                    sleep(1)
+                    if jogadores[proximo_a_jogar]['habilidades'][1]['acao'] and jogadores[proximo_a_jogar]['habilidades'][1]['rounds']>0:
+                        jogadores[proximo_a_jogar]['habilidades'][1]['rounds']-=1
+                        ic('atacante',jogadores[proximo_a_jogar]['nome'])
+                        if jogadores[proximo_a_jogar]['habilidades'][1]['rounds'] == 0:
+                            jogadores[proximo_a_jogar]['habilidades'][1]['acao'] = False
+                    if jogador_atual['habilidades'][2]['acao'] and jogador_atual['habilidades'][2]['rounds']>0:
+                        jogador_atual['habilidades'][2]['rounds']-=1
+                        ic('atacado',jogador_atual['nome'])
+                        if jogador_atual['habilidades'][2]['rounds'] == 0:
+                            jogador_atual['habilidades'][2]['acao'] = False
+
+                elif habilidade_escolhida == 1 or habilidade_escolhida == 2:
+                    print('{} usou {}, {} aumentou em 10%'.format(jogadores[proximo_a_jogar]['nome'], jogadores[proximo_a_jogar]['habilidades'][habilidade_escolhida]['nome'], 'o ataque' if habilidade_escolhida == 1 else 'a defesa'))
+                    sleep(1)
+                    ic(jogadores[proximo_a_jogar]['habilidades'][habilidade_escolhida]['exibir'])
+                    jogadores[proximo_a_jogar]['habilidades'][habilidade_escolhida]['exibir'] = False
+                    ic(jogadores[proximo_a_jogar]['habilidades'][habilidade_escolhida]['exibir'])
+                    jogadores[proximo_a_jogar]['habilidades'][habilidade_escolhida]['acao'] = True
+                    jogadores[proximo_a_jogar]['habilidades'][habilidade_escolhida]['rounds'] = 2
+                    ic(jogadores[proximo_a_jogar]['nome'])
                 if jogador_atual['vida'] <= 0:
                     print('{} ganhou!'.format(jogadores[proximo_a_jogar]['nome']))
                     print('Informe seu nome para ser adicionado a lista de vencedores:\n')
