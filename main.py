@@ -5,24 +5,23 @@ from time import sleep
 from icecream import ic
 # ic.disable()
 
+def ativar_buff(propriedade_afetada, afetado,habilidade):
+    if afetado['habilidades'][habilidade]['acao'] and afetado['habilidades'][habilidade]['rounds'] > 0:
+        buff_ativo = propriedade_afetada + (propriedade_afetada * afetado['habilidades'][habilidade]['aumento'])
+        afetado['habilidades'][habilidade]['rounds'] -= 1
+        if afetado['habilidades'][habilidade]['rounds'] == 0:
+            afetado['habilidades'][habilidade]['acao'] = False
+        ic(afetado['nome'],afetado['habilidades'][habilidade]['nome'], afetado['habilidades'][habilidade]['acao'], afetado['habilidades'][habilidade]['rounds'])
+        return buff_ativo
+    return propriedade_afetada
 
 def dano_fisico(atacante, atacado):
     ic(atacante['nome'],atacado['nome'])
     dano = atacante['força'] * randint(4, 10)
-    if atacante['habilidades'][1]['acao'] and atacante['habilidades'][1]['rounds'] > 0:
-        dano += (dano*atacante['habilidades'][1]['aumento'])
-        atacante['habilidades'][1]['rounds'] -= 1
-        if atacante['habilidades'][1]['rounds'] == 0:
-            atacante['habilidades'][1]['acao'] = False
-        ic('Ataque buff', atacante['nome'],atacante['habilidades'][1]['acao'],atacante['habilidades'][1]['rounds'])
+    dano = ativar_buff(dano, atacante, 1)
     acerto = True if atacante['destreza'] * randint(1, 10) > 10 else False
     defesa_do_atacado = atacado['defesa'] * randint(1, 3)
-    if atacado['habilidades'][2]['acao'] and atacado['habilidades'][2]['rounds'] > 0:
-        defesa_do_atacado += (defesa_do_atacado*atacado['habilidades'][2]['aumento'])
-        atacado['habilidades'][2]['rounds'] -= 1
-        if atacado['habilidades'][2]['rounds'] == 0:
-            atacado['habilidades'][2]['acao'] = False
-        ic('Def buff', atacado['nome'],atacado['habilidades'][2]['acao'],atacado['habilidades'][2]['rounds'])
+    defesa_do_atacado = ativar_buff(defesa_do_atacado, atacado,2)
     dano_real = int(dano) - int(defesa_do_atacado)
     if acerto and dano > defesa_do_atacado:
         print('Seu ataque deu {} de dano e {} perdeu {} de vida!'.format(int(dano), atacado['nome'], dano_real))
@@ -35,19 +34,9 @@ def dano_fisico(atacante, atacado):
 
 def dano_magico(atacante, atacado):
     dano = atacante['poder_magico'] * randint(4, 10)
-    if atacante['habilidades'][1]['acao'] and atacante['habilidades'][1]['rounds'] > 0:
-        dano += (dano*atacante['habilidades'][1]['aumento'])
-        atacante['habilidades'][1]['rounds'] -= 1
-        if atacante['habilidades'][1]['rounds'] == 0:
-            atacante['habilidades'][1]['acao'] = False
-        ic('Ataque buff', atacante['nome'] ,atacante['habilidades'][1]['acao'], atacante['habilidades'][1]['rounds'])
+    dano = ativar_buff(dano, atacante, 1)
     defesa_do_atacado = atacado['defesa'] * randint(1, 3)
-    if atacado['habilidades'][2]['acao'] and atacado['habilidades'][2]['rounds'] > 0:
-        defesa_do_atacado += (defesa_do_atacado*atacado['habilidades'][2]['aumento'])
-        atacado['habilidades'][2]['rounds'] -= 1
-        if atacado['habilidades'][2]['rounds'] == 0:
-            atacado['habilidades'][2]['acao'] = False
-        ic('Def buff', atacado['nome'], atacado['habilidades'][2]['acao'], atacado['habilidades'][2]['rounds'])
+    defesa_do_atacado = ativar_buff(defesa_do_atacado, atacado,2)
     dano_real = int(dano) - int(defesa_do_atacado)
     print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(int(dano), atacado['nome'],dano_real) if dano_real > 0 else 'Que pena, {} se defendeu!'.format(atacado['nome']))
     atacado['vida'] -= dano_real if dano_real > defesa_do_atacado else 0
@@ -57,7 +46,6 @@ def dano_verdadeiro(atacante, atacado):
     dano_real= int(atacado['vida']*atacante['habilidades'][3]['dano_verdadeiro'])
     print('O ataque {} de {} tirou {}% da vida de {}'.format(atacante['habilidades'][3]['nome'], atacante['nome'], int(atacante['habilidades'][3]['dano_verdadeiro']*100), atacado['nome']))
     atacado['vida'] -= dano_real if dano_real <= atacado['vida'] else atacado['vida']
-
 
 
 personagens = { # personagens
@@ -123,7 +111,7 @@ personagens = { # personagens
             },
             {
                 'nome': 'Envólucro de gelo',  # Buff de defesa
-                'aumento':  0.05,
+                'aumento':  0.1,
                 'acao': False,
                 'rounds': 0,
                 'exibir': True
@@ -163,7 +151,7 @@ personagens = { # personagens
             {
                 'nome': 'Espírito da espada',  # Buff de defesa
                 'acao': False,
-                'aumento': 0.1,
+                'aumento': 0.2,
                 'rounds': 0,
                 'exibir': True
 
@@ -235,10 +223,6 @@ def consumir_habilidade(jogador,habilidade):
         jogador['habilidades'][habilidade]['acao']= True
         jogador['habilidades'][habilidade]['rounds']=2
     return jogador
-
-
-def ativar_buff(atacante,atacado):
-    return None
 
 
 def menu():
