@@ -5,7 +5,8 @@ from time import sleep
 
 from icecream import ic
 
-ic.disable()
+# ic.disable()
+
 
 def ativar_buff(propriedade_afetada, afetado,habilidade):
     if afetado['habilidades'][habilidade]['acao'] and afetado['habilidades'][habilidade]['rounds'] > 0:
@@ -42,6 +43,7 @@ def dano_fisico(atacante, atacado):
         print('Que pena, você errou seu ataque!')
     atacado['vida'] -= dano_real if (dano_real > defesa_do_atacado and acerto) else 0
 
+
 # Habilidade 1 Elisa
 # 100% de acerto 
 def dano_magico(atacante, atacado):
@@ -60,8 +62,7 @@ def dano_verdadeiro(atacante, atacado):
     atacado['vida'] -= dano_real if dano_real <= atacado['vida'] else atacado['vida']
 
 
-
-personagens = { # personagens
+personagens = {  # personagens
     'Canon': {  # Guerreiro tanker
         'nome': 'Canon, o Barbudo',
         'vida': 1500,
@@ -71,7 +72,7 @@ personagens = { # personagens
         'poder_magico': 0,
         'habilidades':[
             {
-                'nome':'Soco de uma polegada',# Dano
+                'nome':'Soco de uma polegada', # Dano
                 'descricao': 'Reune toda sua força em um soco para aplicar dano ao inimigo',
                 'acao': dano_fisico,
                 'exibir': True
@@ -183,7 +184,7 @@ personagens = { # personagens
                 'nome': 'Último suspiro',
                 'descricao': 'Tortura o inimigo aplicando 20% da vida do inimigo como dano',
                 'acao':dano_verdadeiro,
-                'dano_verdadeiro': 0.2, # Dano baseado na vida no inimigo, se a vida do oponente for menor que 20% , o hit é fatal
+                'dano_verdadeiro': 0.2,  # Dano baseado na vida no inimigo, se a vida do oponente for menor que 20% , o hit é fatal
                 'exibir': True
 
             },
@@ -191,13 +192,15 @@ personagens = { # personagens
     }
 }
 
+
 # Cria uma cópia das habilidades de um personagem do dicionário para adicionar no array jogadores
 def copia_do_personagem(boneco):
     jogador = personagens[boneco].copy()
-    jogador['habilidades']  = []
+    jogador['habilidades'] = []
     for habilidade in personagens[boneco]['habilidades']:
         jogador['habilidades'].append(habilidade.copy())
     return jogador
+
 
 # Cria uma cópia das habilidades de um personagem do dicionário para adicionar no array jogadores
 def copia_dos_personagens(boneco1,boneco2):
@@ -216,6 +219,7 @@ def quem_vai_jogar(proximo_a_jogar):
     elif proximo_a_jogar == 0:
         primeiro_a_jogar = 1
     return primeiro_a_jogar
+
 
 # Auto-explicativo 
 def receber_entrada(entradas_permitidas, mensagem_de_erro):
@@ -244,7 +248,7 @@ def conhecer_os_personagens():
         if k == 'habilidades':
             print(k+': ')
             for x, habilidade in enumerate(personagens[boneco][k], 1):
-                print('{}.{}:{}'.format(x, habilidade['nome'],habilidade['descricao']))
+                print('{}.{}:{}'.format(x, habilidade['nome'], habilidade['descricao']))
         else:
             print(k + ": " + str(v))
     print('Deseja:\n'+
@@ -254,8 +258,9 @@ def conhecer_os_personagens():
     if op == '2':
         conhecer_os_personagens()
 
+
 # Cria uma cópia das habilidades de um personagem do dicionário para adicionar no array jogadores
-def consumir_habilidade(jogador,habilidade):
+def consumir_habilidade(jogador, habilidade):
     jogador['habilidades'][habilidade]['exibir'] = False
     if habilidade == 1 or habilidade == 2:
         jogador['habilidades'][habilidade]['acao']= True
@@ -264,11 +269,16 @@ def consumir_habilidade(jogador,habilidade):
 
 
 # Seleção de personagem
-def selecionar_personagem():
+def selecionar_personagem(personagem_utilizado=None):
+    ic(personagem_utilizado)
     print('Escolha com qual personagem deseja jogar:\n')
     exibir_personagens()
     print('\n')
-    boneco = receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')
+    if personagem_utilizado:
+        while (boneco := receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')) == personagem_utilizado:
+            print('Personagem {} já utilizado, escolha outro:\n'.format(personagem_utilizado))
+    else:
+        boneco = receber_entrada(entradas_permitidas=personagens.keys(), mensagem_de_erro='Esse personagem não existe')
     return boneco
 
 
@@ -280,7 +290,7 @@ def receber_usuario(entradas_proibidas, mensagem_de_erro):
 
 
 def criar_usuario(x=''):
-    print('Jogador{}, informe o usuário que deseja:\n'.format(' '+str(x) if x else ''))
+    print('Jogador{}, informe o nome de usuário que deseja criar:\n'.format(' '+str(x) if x else ''))
     usuario = receber_usuario(entradas_proibidas=personagens.keys(), mensagem_de_erro='Usuário Inválido, o nome de usuário deve ser diferente do nome dos persongens abaixo')
     path_usuario = Path('usuario_' + usuario)
     while os.path.exists(path_usuario):
@@ -297,11 +307,12 @@ def criar_usuario(x=''):
     print("Usuário ", usuario, " criado com sucesso! ")
 
 
-def login(x):
+def login(x, personagem_utilizado=None):
+    ic(personagem_utilizado)
     print('Jogador {}, informe seu usuário:\n'.format(x))
     usuario = input()
     path_usuario = Path('usuario_' + usuario)
-    if os.path.exists(path_usuario):
+    if os.path.exists(path_usuario) and not os.path.exists(path_usuario.joinpath('flag')):
         path_senha = path_usuario.joinpath('senha')
         with open(path_senha, 'r') as arquivo_usuario:
             senha_correta = arquivo_usuario.readline()
@@ -309,12 +320,14 @@ def login(x):
         ic(senha_correta)
         senha = receber_senha(entradas_permitidas=senha_correta)
         print('Bem-vindo(a) {}'.format(usuario))
+        flag = path_usuario.joinpath('flag')
+        flag.open('w')
         path_personagem = path_usuario.joinpath('personagem')
         with open(path_personagem, 'w') as arquivo_personagem:
-            arquivo_personagem.write(selecionar_personagem())
+            arquivo_personagem.write(selecionar_personagem(personagem_utilizado))
         return usuario
     else:
-        print('Usuário não encontrado!')
+        print('Usuário não encontrado ou já logado')
         print('Deseja:\n' +
               '1.Tentar novamente\n' +
               '2.Criar Usuário\n')
@@ -325,12 +338,15 @@ def login(x):
             criar_usuario(x)
             return login(x)
 
+
 def logins():
     usuarios = []
-    usuarios.append(login(1))
-    usuarios.append(login(2))
+    usuarios.append(login(x=1))
+    path_usuario = Path('usuario_' + usuarios[0])
+    with open(path_usuario.joinpath('personagem')) as arquivo_personagem:
+        personagem_utilizado = arquivo_personagem.readline()
+    ic(usuarios.append(login(x=2,personagem_utilizado=personagem_utilizado)))
     menu(usuarios)
-
 
 
 # Autenticação
@@ -351,22 +367,22 @@ def autenticacao():
 # Menu principal
 def menu(usuarios):
     jogadores = []
-    proximo_a_jogar = randint(0, 1) #decide quem joga primeiro
+    proximo_a_jogar = randint(0, 1)  # decide quem joga primeiro
     print('Bem-vindos(as) nobres lutadores ao Perfect Legends!\n' +
           'Neste momento, vocês desejam:\n' +
           '1.Jogar\n' +
           '2.Conhecer os personagens\n' +
           '3.Exibir vencedores\n' +
           '4.Sair\n')
-    op = receber_entrada(entradas_permitidas=['1','2','3','4'], mensagem_de_erro='Essa opção não existe')
+    op = receber_entrada(entradas_permitidas=['1', '2', '3', '4'], mensagem_de_erro='Essa opção não existe')
+    path_usuario = Path('usuario_' + usuarios[0])
+    with open(path_usuario.joinpath('personagem')) as arquivo_personagem:
+        boneco1 = arquivo_personagem.readline()
+    path_usuario1 = Path('usuario_' + usuarios[1])
+    with open(path_usuario1.joinpath('personagem')) as arquivo_personagem:
+        boneco2 = arquivo_personagem.readline()
+    jogadores = copia_dos_personagens(boneco1, boneco2)
     if op == '1':
-        path_usuario = Path('usuario_' + usuarios[0])
-        with open(path_usuario.joinpath('personagem')) as arquivo_personagem:
-            boneco1 = arquivo_personagem.readline()
-        path_usuario1 = Path('usuario_' + usuarios[1])
-        with open(path_usuario1.joinpath('personagem')) as arquivo_personagem:
-            boneco2 = arquivo_personagem.readline()
-        jogadores = copia_dos_personagens(boneco1,boneco2)
         primeiro_a_jogar = quem_vai_jogar(proximo_a_jogar)
         while jogadores[primeiro_a_jogar]['vida'] > 0 and jogadores[proximo_a_jogar]['vida'] > 0: # Início da batalha
             print('{} qual ataque deseja executar:'.format(jogadores[primeiro_a_jogar]['nome']))
@@ -376,17 +392,17 @@ def menu(usuarios):
                     print('{}.{}'.format(x, habilidade['nome']))
                     habilidades_permitidas.append(str(x))
             habilidade_escolhida = int(receber_entrada(entradas_permitidas=habilidades_permitidas, mensagem_de_erro='Essa habilidade não existe'))-1
-            if habilidade_escolhida == 0 or habilidade_escolhida == 3: # Habilidades 1 ou 4
+            if habilidade_escolhida == 0 or habilidade_escolhida == 3:  # Habilidades 1 ou 4
                 jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['acao'](jogadores[primeiro_a_jogar], jogadores[proximo_a_jogar])
                 sleep(1)
-            if habilidade_escolhida > 0 and habilidade_escolhida < 4:# Habilidades 2, 3 ou 4
+            if habilidade_escolhida > 0 and habilidade_escolhida < 4:  # Habilidades 2, 3 ou 4
                 jogadores[primeiro_a_jogar] = consumir_habilidade(jogadores[primeiro_a_jogar], habilidade_escolhida)
                 if habilidade_escolhida == 1 or habilidade_escolhida == 2:
                     print('{} usou {}, {} aumentou em {}%'.format(jogadores[primeiro_a_jogar]['nome'], jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['nome'], 'o ataque' if habilidade_escolhida==1 else 'a defesa', jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['aumento']*100))
                     sleep(1)
             print('Vida atual de {}:{}, vida atual de {}:{}'.format(jogadores[primeiro_a_jogar]['nome'], jogadores[primeiro_a_jogar]['vida'], jogadores[proximo_a_jogar]['nome'], jogadores[proximo_a_jogar]['vida']))
             if jogadores[proximo_a_jogar]['vida'] <= 0:
-                ic(boneco1,boneco2,jogadores[primeiro_a_jogar]['nome'],jogadores[proximo_a_jogar]['nome'])
+                ic(boneco1, boneco2, jogadores[primeiro_a_jogar]['nome'], jogadores[proximo_a_jogar]['nome'])
                 if boneco1 in jogadores[primeiro_a_jogar]['nome']:
                     ic('entrou 1')
                     print('{} ganhou!'.format(usuarios[0]))
@@ -413,6 +429,8 @@ def menu(usuarios):
         sleep(2)
     if op != '4':
         menu(usuarios)
+    os.remove(path_usuario.joinpath('flag'))
+    os.remove(path_usuario1.joinpath('flag'))
 
 
 autenticacao()
