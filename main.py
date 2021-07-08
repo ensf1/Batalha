@@ -37,8 +37,10 @@ def dano_fisico(atacante, atacado):
     dano_real = int(dano) - int(defesa_do_atacado)
     if acerto and dano > defesa_do_atacado:
         print('Seu ataque deu {} de dano e {} perdeu {} de vida!'.format(int(dano), atacado['nome'], dano_real))
-    elif acerto:
-        print('Que pena, {} se defendeu!'.format(atacado['nome']))
+    elif acerto and dano <= defesa_do_atacado:
+        contra_ataque = defesa_do_atacado - dano
+        atacante['vida'] -= contra_ataque
+        print('Que pena, {} contra-atacou e tirou {} de sua vida'.format(atacado['nome'],contra_ataque))
     else:
         print('Que pena, você errou seu ataque!')
     atacado['vida'] -= dano_real if (dano_real > defesa_do_atacado and acerto) else 0
@@ -52,7 +54,10 @@ def dano_magico(atacante, atacado):
     defesa_do_atacado = atacado['defesa'] * randint(1, 3)
     defesa_do_atacado = ativar_buff(defesa_do_atacado, atacado,2)
     dano_real = int(dano) - int(defesa_do_atacado)
-    print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(int(dano), atacado['nome'],dano_real) if dano_real > 0 else 'Que pena, {} se defendeu!'.format(atacado['nome']))
+    if dano <= defesa_do_atacado:
+        contra_ataque = defesa_do_atacado - dano
+        atacante['vida'] -= contra_ataque
+    print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(int(dano), atacado['nome'],dano_real) if dano_real > 0 else 'Que pena, {} contra-atacou e tirou {} de sua vida!'.format(atacado['nome'], contra_ataque))
     atacado['vida'] -= dano_real if dano_real > defesa_do_atacado else 0
 
 
