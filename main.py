@@ -72,15 +72,15 @@ personagens = {  # personagens
         'poder_magico': 0,
         'habilidades':[
             {
-                'nome':'Soco de uma polegada', # Dano
-                'descricao': 'Reune toda sua força em um soco para aplicar dano ao inimigo',
+                'nome':'Soco de uma polegada',# Dano
+                'descricao': 'Reúne toda sua força em um soco para aplicar dano ao inimigo',
                 'acao': dano_fisico,
                 'exibir': True
 
             },
             {
                 'nome': 'Fúria infernal',
-                'descricao': 'Concentra toda sua força para tornar seus socos mais fortes nos próximos ataques',
+                'descricao': 'Reúne toda a fúria armazenada em sua grande barba, tornando seus socos mais fortes nos próximos ataques',
                 'acao': False,
                 'aumento': 0.05,
                 'rounds': 0,
@@ -97,7 +97,7 @@ personagens = {  # personagens
 
             },
             {
-                'nome': 'Espinhos penetrante',  # Dano baseado na vida no inimigo
+                'nome': 'Espinhos penetrantes',  # Dano baseado na vida no inimigo
                 'descricao': 'Crava espinhos aplicando 5% da vida do inimigo como dano',
                 'acao': dano_verdadeiro,
                 'dano_verdadeiro': 0.05,
@@ -123,7 +123,7 @@ personagens = {  # personagens
             },
             {
                 'nome': 'Tempestade de neve',
-                'descricao': 'Com seu poder mágico, invoca uma tempestade de neve para aumentar seu dano nos próximos ataques',
+                'descricao': 'Declama uma estonteante melodia que invoca uma tempestade de neve, aumentando seu dano nos próximos ataques',
                 'aumento': 0.1,
                 'acao': False,
                 'rounds': 0,
@@ -157,14 +157,14 @@ personagens = {  # personagens
         'habilidades': [
             {
                 'nome': 'Katana incisiva',  # Dano
-                'descricao': 'Dilacera o inimigo com a força de sua katana aplicando dano ao inimigo',
+                'descricao': 'Golpeia o inimigo com a força de sua katana',
                 'acao': dano_fisico,
                 'exibir': True
 
             },
             {
                 'nome': 'Lâmina corrompida',  # Buff de dano fisico
-                'descricao': 'Envena sua lâmina para aplicar mais dano ao inimigo nos próximos rounds',
+                'descricao': 'Invoca o espírito selado na espada, aumentando o dano dos próximos ataques',
                 'acao': False,
                 'aumento': 0.2,
                 'rounds': 0,
@@ -173,7 +173,7 @@ personagens = {  # personagens
             },
             {
                 'nome': 'Espírito da espada',  # Buff de defesa
-                'descricao': 'Invoca seu espírito de defesa na sua própria espada para se proteger dos próximos ataques inimigos',
+                'descricao': 'O espírito assume o controle e protege seu portador dos próximos ataques',
                 'acao': False,
                 'aumento': 0.2,
                 'rounds': 0,
@@ -182,7 +182,7 @@ personagens = {  # personagens
             },
             {
                 'nome': 'Último suspiro',
-                'descricao': 'Tortura o inimigo aplicando 20% da vida do inimigo como dano',
+                'descricao': 'Concentra sua força em um único golpe que dilacera o inimigo, aplicando 20% da vida do inimigo como dano',
                 'acao':dano_verdadeiro,
                 'dano_verdadeiro': 0.2,  # Dano baseado na vida no inimigo, se a vida do oponente for menor que 20% , o hit é fatal
                 'exibir': True
