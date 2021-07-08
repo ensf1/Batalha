@@ -1,11 +1,11 @@
-import os
-from pathlib import Path
-from random import randint
-from time import sleep
+import os #Para adicionar/remover os arquivos
+from pathlib import Path #Para acessar os arquivos
+from random import randint #Para randomizar algumas funções do código
+from time import sleep  #Para facilitar para o usuário a leitura do que está acontecendo
 
 from icecream import ic
 
-# ic.disable()
+ic.disable()
 
 
 def ativar_buff(propriedade_afetada, afetado,habilidade):
@@ -37,8 +37,10 @@ def dano_fisico(atacante, atacado):
     dano_real = int(dano) - int(defesa_do_atacado)
     if acerto and dano > defesa_do_atacado:
         print('Seu ataque deu {} de dano e {} perdeu {} de vida!'.format(int(dano), atacado['nome'], dano_real))
-    elif acerto:
-        print('Que pena, {} se defendeu!'.format(atacado['nome']))
+    elif acerto and dano <= defesa_do_atacado:
+        contra_ataque = defesa_do_atacado - dano
+        atacante['vida'] -= contra_ataque
+        print('Que pena, {} contra-atacou e tirou {} de sua vida'.format(atacado['nome'],contra_ataque))
     else:
         print('Que pena, você errou seu ataque!')
     atacado['vida'] -= dano_real if (dano_real > defesa_do_atacado and acerto) else 0
@@ -52,7 +54,10 @@ def dano_magico(atacante, atacado):
     defesa_do_atacado = atacado['defesa'] * randint(1, 3)
     defesa_do_atacado = ativar_buff(defesa_do_atacado, atacado,2)
     dano_real = int(dano) - int(defesa_do_atacado)
-    print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(int(dano), atacado['nome'],dano_real) if dano_real > 0 else 'Que pena, {} se defendeu!'.format(atacado['nome']))
+    if dano <= defesa_do_atacado:
+        contra_ataque = defesa_do_atacado - dano
+        atacante['vida'] -= contra_ataque
+    print('Seu ataque deu {} de dano mágico e {} perdeu {} de vida!'.format(int(dano), atacado['nome'],dano_real) if dano_real > 0 else 'Que pena, {} contra-atacou e tirou {} de sua vida!'.format(atacado['nome'], contra_ataque))
     atacado['vida'] -= dano_real if dano_real > defesa_do_atacado else 0
 
 
@@ -289,7 +294,7 @@ def receber_usuario(entradas_proibidas, mensagem_de_erro):
     return usuario
 
 
-def criar_usuario(x=''):
+def criar_usuario(x=None):
     print('Jogador{}, informe o nome de usuário que deseja criar:\n'.format(' '+str(x) if x else ''))
     usuario = receber_usuario(entradas_proibidas=personagens.keys(), mensagem_de_erro='Usuário Inválido, o nome de usuário deve ser diferente do nome dos persongens abaixo')
     path_usuario = Path('usuario_' + usuario)
@@ -346,6 +351,9 @@ def logins():
     with open(path_usuario.joinpath('personagem')) as arquivo_personagem:
         personagem_utilizado = arquivo_personagem.readline()
     ic(usuarios.append(login(x=2,personagem_utilizado=personagem_utilizado)))
+    os.remove(path_usuario.joinpath('flag'))
+    path_usuario = Path('usuario_' + usuarios[1])
+    os.remove(path_usuario.joinpath('flag'))
     menu(usuarios)
 
 
@@ -367,6 +375,8 @@ def autenticacao():
 # Menu principal
 def menu(usuarios):
     jogadores = []
+    arquivo_de_vencedores = Path('vencedores')
+    arquivo_de_vencedores.touch()
     proximo_a_jogar = randint(0, 1)  # decide quem joga primeiro
     print('Bem-vindos(as) nobres lutadores ao Perfect Legends!\n' +
           'Neste momento, vocês desejam:\n' +
@@ -384,7 +394,7 @@ def menu(usuarios):
     jogadores = copia_dos_personagens(boneco1, boneco2)
     if op == '1':
         primeiro_a_jogar = quem_vai_jogar(proximo_a_jogar)
-        while jogadores[primeiro_a_jogar]['vida'] > 0 and jogadores[proximo_a_jogar]['vida'] > 0: # Início da batalha
+        while jogadores[primeiro_a_jogar]['vida'] > 0 and jogadores[proximo_a_jogar]['vida'] > 0: # Início dos rounds
             print('{} qual ataque deseja executar:'.format(jogadores[primeiro_a_jogar]['nome']))
             habilidades_permitidas = []
             for x, habilidade in enumerate(jogadores[primeiro_a_jogar]['habilidades'], 1):
@@ -394,13 +404,13 @@ def menu(usuarios):
             habilidade_escolhida = int(receber_entrada(entradas_permitidas=habilidades_permitidas, mensagem_de_erro='Essa habilidade não existe'))-1
             if habilidade_escolhida == 0 or habilidade_escolhida == 3:  # Habilidades 1 ou 4
                 jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['acao'](jogadores[primeiro_a_jogar], jogadores[proximo_a_jogar])
-                sleep(1)
             if habilidade_escolhida > 0 and habilidade_escolhida < 4:  # Habilidades 2, 3 ou 4
                 jogadores[primeiro_a_jogar] = consumir_habilidade(jogadores[primeiro_a_jogar], habilidade_escolhida)
                 if habilidade_escolhida == 1 or habilidade_escolhida == 2:
                     print('{} usou {}, {} aumentou em {}%'.format(jogadores[primeiro_a_jogar]['nome'], jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['nome'], 'o ataque' if habilidade_escolhida==1 else 'a defesa', jogadores[primeiro_a_jogar]['habilidades'][habilidade_escolhida]['aumento']*100))
-                    sleep(1)
             print('Vida atual de {}:{}, vida atual de {}:{}'.format(jogadores[primeiro_a_jogar]['nome'], jogadores[primeiro_a_jogar]['vida'], jogadores[proximo_a_jogar]['nome'], jogadores[proximo_a_jogar]['vida']))
+            sleep(1)
+            print('\n')
             if jogadores[proximo_a_jogar]['vida'] <= 0:
                 ic(boneco1, boneco2, jogadores[primeiro_a_jogar]['nome'], jogadores[proximo_a_jogar]['nome'])
                 if boneco1 in jogadores[primeiro_a_jogar]['nome']:
@@ -420,17 +430,13 @@ def menu(usuarios):
         conhecer_os_personagens()
     elif op == '3':
         print('Vencedores:')
-        arquivo_de_vencedores = Path('vencedores')
-        arquivo_de_vencedores.touch()
         with open(arquivo_de_vencedores, 'r') as vencedores:
             for line in vencedores:
-                print(line, end='')
-        print('')
+                print(line, end='\n')
         sleep(2)
     if op != '4':
         menu(usuarios)
-    os.remove(path_usuario.joinpath('flag'))
-    os.remove(path_usuario1.joinpath('flag'))
+
 
 
 autenticacao()
